@@ -28,32 +28,31 @@ extern char has_catch[];
 extern int cxceptions_jmpbuf_index;
 
 void throw_exception(exception_t* exception);
-void handle_no_catch();
+exception_t fmt_exception(char* type, char* format, ...);
 void print_exception(exception_t* exception);
+void handle_no_catch();
 
 #define CONCAT_IMPL(a, b) a##b
 #define CONCAT(a, b) CONCAT_IMPL(a, b)
 
 #define TRY                                               \
 	setjmp(cxceptions_jmpbuf[cxceptions_jmpbuf_index++]); \
-	for (char CONCAT(cxceptions_check, __LINE__) = 0; CONCAT(cxceptions_check, __LINE__) == 0 && cxceptions_current == NULL; cxceptions_jmpbuf_index--, CONCAT(cxceptions_check, __LINE__) = 1)
+	char CONCAT(cxceptions_check, __LINE__) = 0;          \
+	for (; CONCAT(cxceptions_check, __LINE__) == 0 && cxceptions_current == NULL; cxceptions_jmpbuf_index--, CONCAT(cxceptions_check, __LINE__) = 1)
 
-#define CATCH(var_name)                         \
-	exception_t* var_name = cxceptions_current; \
-	if (cxceptions_current != NULL)
+#define CATCH(var_name)                          \
+	char CONCAT(cxceptions_catch, __LINE__) = 0; \
+	for (exception_t* var_name = cxceptions_current; CONCAT(cxceptions_catch, __LINE__) == 0 && cxceptions_current != NULL; CONCAT(cxceptions_catch, __LINE__) = 1, free(var_name->message))
 
-#define THROW(t, m, ...)                                  \
-	char CONCAT(strbuf, __LINE__)[CXEPTIONS_MESSAGE_BUF]; \
-	sprintf(CONCAT(strbuf, __LINE__), m, ##__VA_ARGS__);  \
-	THROW_NO_FMT(t, CONCAT(strbuf, __LINE__));
+#define EXCEPTION(t, m, ...) fmt_exception(t, m, ##__VA_ARGS__)
 
-#define THROW_NO_FMT(t, m)                     \
-	exception_t CONCAT(throw, __LINE__) = {0}; \
-	CONCAT(throw, __LINE__).type = t;          \
-	CONCAT(throw, __LINE__).message = m;       \
-	CONCAT(throw, __LINE__).line = __LINE__;   \
-	CONCAT(throw, __LINE__).file = __FILE__;   \
-	throw_exception(&CONCAT(throw, __LINE__));
+#define EXCEPTION_NO_FMT(t, m) \
+	(exception_t) { .type = t, .message = m }
 
-#define THROW_EX(exception) throw_exception(&exception);
+#define THROW(exception)                             \
+	exception_t CONCAT(throw, __LINE__) = exception; \
+	CONCAT(throw, __LINE__).line = __LINE__;         \
+	CONCAT(throw, __LINE__).file = __FILE__;         \
+	throw_exception(&CONCAT(throw, __LINE__))
+
 #endif // !CXEPTIONS
