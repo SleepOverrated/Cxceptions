@@ -6,12 +6,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#ifndef CXEPTIONS_MESSAGE_BUF
-#define CXEPTIONS_MESSAGE_BUF 1024
+#ifndef CXCEPTIONS_MESSAGE_BUF
+#define CXCEPTIONS_MESSAGE_BUF 1024
 #endif // !CXEPTIONS_MESSAGE_BUF
 
-#ifndef CXEPTIONS_MAX_TREE
-#define CXEPTIONS_MAX_TREE 255
+#ifndef CXCEPTIONS_MAX_TREE
+#define CXCEPTIONS_MAX_TREE 255
 #endif /* ifndef CXEPTIONS_MAX_TREE */
 
 typedef struct exception {
@@ -23,14 +23,14 @@ typedef struct exception {
 } exception_t;
 
 extern exception_t* cxceptions_current;
-extern jmp_buf cxceptions_jmpbuf[CXEPTIONS_MAX_TREE];
+extern jmp_buf cxceptions_jmpbuf[CXCEPTIONS_MAX_TREE];
 extern char has_catch[];
 extern int cxceptions_jmpbuf_index;
 
-void throw_exception(exception_t* exception);
-exception_t fmt_exception(char* type, char* format, ...);
+void cxceptions_throw_exception(exception_t* exception);
+exception_t cxceptions_fmt_exception(char* type, char* format, ...);
+void cxceptions_handle_no_catch();
 void print_exception(exception_t* exception);
-void handle_no_catch();
 
 #define CONCAT_IMPL(a, b) a##b
 #define CONCAT(a, b) CONCAT_IMPL(a, b)
@@ -44,7 +44,7 @@ void handle_no_catch();
 	char CONCAT(cxceptions_catch, __LINE__) = 0; \
 	for (exception_t* var_name = cxceptions_current; CONCAT(cxceptions_catch, __LINE__) == 0 && cxceptions_current != NULL; CONCAT(cxceptions_catch, __LINE__) = 1, free(var_name->message))
 
-#define EXCEPTION(t, m, ...) fmt_exception(t, m, ##__VA_ARGS__)
+#define EXCEPTION(t, m, ...) cxceptions_fmt_exception(t, m, ##__VA_ARGS__)
 
 #define EXCEPTION_NO_FMT(t, m) \
 	(exception_t) { .type = t, .message = m }

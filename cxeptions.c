@@ -4,24 +4,24 @@
 #include <string.h>
 
 exception_t* cxceptions_current = NULL;
-jmp_buf cxceptions_jmpbuf[CXEPTIONS_MAX_TREE] = {0};
+jmp_buf cxceptions_jmpbuf[CXCEPTIONS_MAX_TREE] = {0};
 int cxceptions_jmpbuf_index = 0;
 
 void throw_exception(exception_t* exception) {
 	cxceptions_current = exception;
 	if (cxceptions_jmpbuf_index <= 0) {
-		handle_no_catch();
+		cxceptions_handle_no_catch();
 	} else {
 		longjmp(cxceptions_jmpbuf[--cxceptions_jmpbuf_index], 0);
 	}
 }
 
-exception_t fmt_exception(char* type, char* format, ...) {
+exception_t cxceptions_fmt_exception(char* type, char* format, ...) {
 	exception_t exception = {0};
 	va_list args;
 	va_start(args, format);
 
-	char buf[CXEPTIONS_MESSAGE_BUF];
+	char buf[CXCEPTIONS_MESSAGE_BUF];
 	vsnprintf(buf, sizeof buf, format, args);
 	va_end(args);
 
@@ -31,7 +31,7 @@ exception_t fmt_exception(char* type, char* format, ...) {
 	return exception;
 }
 
-void handle_no_catch() {
+void cxceptions_handle_no_catch() {
 	printf("Unhandled ");
 	print_exception(cxceptions_current);
 	exit(-1);
