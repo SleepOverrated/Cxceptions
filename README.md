@@ -3,7 +3,7 @@
 ## Why exceptions?
 
 Exceptions are a cleaner and easier way to trace unexpected errors or other mistakes in your code,
-also being easier to understand then unclear return values.
+while also being easier to understand then unclear return values.
 
 ## Usage
 
