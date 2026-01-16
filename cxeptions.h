@@ -4,6 +4,7 @@
 #include <setjmp.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #ifndef CXCEPTIONS_MESSAGE_BUF
@@ -18,8 +19,11 @@ typedef struct exception {
 	char* type;
 	char* message;
 
+#ifndef CXCEPTIONS_NO_LOCATION // Allow to remove location information
 	char* file;
 	size_t line;
+#endif // !CXCEPTIONS_NO_LOCATION
+
 } exception_t;
 
 extern exception_t* cxceptions_current;
@@ -30,6 +34,17 @@ extern int cxceptions_jmpbuf_index;
 void cxceptions_throw_exception(exception_t* exception);
 exception_t cxceptions_fmt_exception(char* type, char* format, ...);
 void cxceptions_handle_no_catch();
+
+// Allow to remove location information
+#ifdef CXCEPTIONS_NO_LOCATION
+static inline void prinprint_exception(exception_t* exception) {
+	fprintf(stderr, "%s Exception: %s\n", e->type, e->message);
+}
+#else
+static inline void print_exception(exception_t* e) {
+	fprintf(stderr, "%s Exception: %s\n  at %s:%lu\n", e->type, e->message, e->file, e->line);
+}
+#endif
 void print_exception(exception_t* exception);
 
 #define CONCAT_IMPL(a, b) a##b
@@ -49,10 +64,19 @@ void print_exception(exception_t* exception);
 #define EXCEPTION_NO_FMT(t, m) \
 	(exception_t) { .type = t, .message = m }
 
+// Allow to remove location information
+#ifdef CXCEPTIONS_NO_LOCATION
+
+#define THROW(exception) cxcxceptions_throw_exception(&excexception)
+
+#else
+
 #define THROW(exception)                             \
 	exception_t CONCAT(throw, __LINE__) = exception; \
 	CONCAT(throw, __LINE__).line = __LINE__;         \
 	CONCAT(throw, __LINE__).file = __FILE__;         \
-	throw_exception(&CONCAT(throw, __LINE__))
+	cxceptions_throw_exception(&CONCAT(throw, __LINE__))
+
+#endif // !CXCEPTIONS_NO_LOCATION
 
 #endif // !CXEPTIONS
