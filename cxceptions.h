@@ -33,11 +33,12 @@ extern int cxceptions_jmpbuf_index;
 
 void cxceptions_throw_exception(exception_t* exception);
 exception_t* cxceptions_fmt_exception(char* type, char* format, ...);
+exception_t* cxceptions_exception(char* type, char* message);
 void cxceptions_handle_no_catch();
 
 // Allow to remove location information
 #ifdef CXCEPTIONS_NO_LOCATION
-static inline void prinprint_exception(exception_t* exception) {
+static inline void print_exception(exception_t* e) {
 	fprintf(stderr, "%s Exception: %s\n", e->type, e->message);
 }
 #else
@@ -60,13 +61,11 @@ static inline void print_exception(exception_t* e) {
 
 #define EXCEPTION(t, m, ...) cxceptions_fmt_exception(t, m, ##__VA_ARGS__)
 
-#define EXCEPTION_NO_FMT(t, m) \
-	(exception_t) { .type = t, .message = m }
-
+#define EXCEPTION_NO_FMT(t, m) cxceptions_exception(t, m)
 // Allow to remove location information
 #ifdef CXCEPTIONS_NO_LOCATION
 
-#define THROW(exception) cxcxceptions_throw_exception(excexception)
+#define THROW(exception) cxceptions_throw_exception(exception)
 
 #else
 

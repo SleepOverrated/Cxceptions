@@ -34,6 +34,16 @@ exception_t* cxceptions_fmt_exception(char* type, char* format, ...) {
 	return exception;
 }
 
+exception_t* cxceptions_exception(char* type, char* message) {
+	exception_t* exception = malloc(sizeof(exception_t));
+	exception->type = type;
+	exception->message = malloc(strlen(message) + 1);
+	if (exception->message) {
+		strcpy(exception->message, message);
+	}
+	return exception;
+}
+
 void cxceptions_handle_no_catch() {
 	printf("Unhandled ");
 	print_exception(cxceptions_current);
