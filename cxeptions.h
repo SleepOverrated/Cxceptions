@@ -45,7 +45,6 @@ static inline void print_exception(exception_t* e) {
 	fprintf(stderr, "%s Exception: %s\n  at %s:%lu\n", e->type, e->message, e->file, e->line);
 }
 #endif
-void print_exception(exception_t* exception);
 
 #define CONCAT_IMPL(a, b) a##b
 #define CONCAT(a, b) CONCAT_IMPL(a, b)
