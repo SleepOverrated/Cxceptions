@@ -1,6 +1,7 @@
 #include "cxceptions.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 exception_t* cxceptions_current = NULL;
@@ -16,8 +17,8 @@ void cxceptions_throw_exception(exception_t* exception) {
 	}
 }
 
-exception_t cxceptions_fmt_exception(char* type, char* format, ...) {
-	exception_t exception = {0};
+exception_t* cxceptions_fmt_exception(char* type, char* format, ...) {
+	exception_t* exception = malloc(sizeof(exception_t));
 	va_list args;
 	va_start(args, format);
 
@@ -25,9 +26,11 @@ exception_t cxceptions_fmt_exception(char* type, char* format, ...) {
 	vsnprintf(buf, sizeof buf, format, args);
 	va_end(args);
 
-	exception.type = type;
-	char* dest = malloc(strlen(buf) + 1);
-	exception.message = strcpy(dest, buf);
+	exception->type = type;
+	exception->message = malloc(strlen(buf) + 1);
+	if (exception->message) {
+		strcpy(exception->message, buf);
+	}
 	return exception;
 }
 
