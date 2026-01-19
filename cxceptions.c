@@ -17,33 +17,6 @@ void cxceptions_throw_exception(exception_t* exception) {
 	}
 }
 
-exception_t* cxceptions_fmt_exception(char* type, char* format, ...) {
-	exception_t* exception = malloc(sizeof(exception_t));
-	va_list args;
-	va_start(args, format);
-
-	char buf[CXCEPTIONS_MESSAGE_BUF];
-	vsnprintf(buf, sizeof buf, format, args);
-	va_end(args);
-
-	exception->type = type;
-	exception->message = malloc(strlen(buf) + 1);
-	if (exception->message) {
-		strcpy(exception->message, buf);
-	}
-	return exception;
-}
-
-exception_t* cxceptions_exception(char* type, char* message) {
-	exception_t* exception = malloc(sizeof(exception_t));
-	exception->type = type;
-	exception->message = malloc(strlen(message) + 1);
-	if (exception->message) {
-		strcpy(exception->message, message);
-	}
-	return exception;
-}
-
 void cxceptions_handle_no_catch() {
 	printf("Unhandled ");
 	print_exception(cxceptions_current);

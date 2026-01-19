@@ -32,8 +32,6 @@ extern char has_catch[];
 extern int cxceptions_jmpbuf_index;
 
 void cxceptions_throw_exception(exception_t* exception);
-exception_t* cxceptions_fmt_exception(char* type, char* format, ...);
-exception_t* cxceptions_exception(char* type, char* message);
 void cxceptions_handle_no_catch();
 
 // Allow to remove location information
@@ -57,11 +55,11 @@ static inline void print_exception(exception_t* e) {
 
 #define CATCH(var_name)                          \
 	char CONCAT(cxceptions_catch, __LINE__) = 0; \
-	for (exception_t* var_name = cxceptions_current; CONCAT(cxceptions_catch, __LINE__) == 0 && cxceptions_current != NULL; CONCAT(cxceptions_catch, __LINE__) = 1, free(cxceptions_current->message), free(cxceptions_current))
+	for (exception_t* var_name = cxceptions_current; CONCAT(cxceptions_catch, __LINE__) == 0 && cxceptions_current != NULL; CONCAT(cxceptions_catch, __LINE__) = 1)
 
-#define EXCEPTION(t, m, ...) cxceptions_fmt_exception(t, m, ##__VA_ARGS__)
+#define EXCEPTION(t, m) \
+	(exception_t) { .type = t, .message = m }
 
-#define EXCEPTION_NO_FMT(t, m) cxceptions_exception(t, m)
 // Allow to remove location information
 #ifdef CXCEPTIONS_NO_LOCATION
 
@@ -69,11 +67,11 @@ static inline void print_exception(exception_t* e) {
 
 #else
 
-#define THROW(exception)                              \
-	exception_t* CONCAT(throw, __LINE__) = exception; \
-	CONCAT(throw, __LINE__)->line = __LINE__;         \
-	CONCAT(throw, __LINE__)->file = __FILE__;         \
-	cxceptions_throw_exception(CONCAT(throw, __LINE__))
+#define THROW(exception)                             \
+	exception_t CONCAT(throw, __LINE__) = exception; \
+	CONCAT(throw, __LINE__).line = __LINE__;         \
+	CONCAT(throw, __LINE__).file = __FILE__;         \
+	cxceptions_throw_exception(&CONCAT(throw, __LINE__))
 
 #endif // !CXCEPTIONS_NO_LOCATION
 
