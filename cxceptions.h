@@ -1,5 +1,5 @@
-#ifndef CXEPTIONS
-#define CXEPTIONS
+#ifndef CXEPTIONS_H
+#define CXEPTIONS_H
 
 #include <setjmp.h>
 #include <stddef.h>
@@ -9,11 +9,11 @@
 
 #ifndef CXCEPTIONS_MESSAGE_BUF
 #define CXCEPTIONS_MESSAGE_BUF 1024
-#endif // !CXEPTIONS_MESSAGE_BUF
+#endif // !CXCEPTIONS_MESSAGE_BUF
 
 #ifndef CXCEPTIONS_MAX_TREE
 #define CXCEPTIONS_MAX_TREE 255
-#endif /* ifndef CXEPTIONS_MAX_TREE */
+#endif // !CXCEPTIONS_MAX_TREE
 
 typedef struct exception {
 	char* type;
@@ -28,7 +28,6 @@ typedef struct exception {
 
 extern exception_t* cxceptions_current;
 extern jmp_buf cxceptions_jmpbuf[CXCEPTIONS_MAX_TREE];
-extern char has_catch[];
 extern int cxceptions_jmpbuf_index;
 
 void cxceptions_throw_exception(exception_t* exception);
@@ -63,7 +62,7 @@ static inline void print_exception(exception_t* e) {
 // Allow to remove location information
 #ifdef CXCEPTIONS_NO_LOCATION
 
-#define THROW(exception) cxceptions_throw_exception(exception)
+#define THROW(exception) cxceptions_throw_exception(&exception)
 
 #else
 
@@ -75,4 +74,4 @@ static inline void print_exception(exception_t* e) {
 
 #endif // !CXCEPTIONS_NO_LOCATION
 
-#endif // !CXEPTIONS
+#endif // !CXEPTIONS_H
