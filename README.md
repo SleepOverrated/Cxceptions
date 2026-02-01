@@ -21,6 +21,8 @@ int main() {
 
 ## Behavior
 
+TRYs with no CATCH will stop the execution and therefor exit the TRY block after a exception was thrown, but offer no option to handle them.
+
 ```C
 int main() {
     TRY {
@@ -32,8 +34,13 @@ int main() {
     } CATCH (exception) {
         print_exception(exception);
     }
+    return 0;
 }
 ```
 
 In this case there is a TRY with no CATCH.
 The exception will not stop the execution of the print statement, will however exit the nested try block once thrown.
+
+## Limitations
+
+Due to my lilited knowledge of C it currently is not possible to open two TRY blocks in the same line.
